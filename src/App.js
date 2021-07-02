@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import { withAuthenticator } from "@aws-amplify/ui-react";
+import { Auth } from "aws-amplify";
+import { useState, useEffect } from "react";
+import "./App.css";
+import MainApp from "./container/MainApp";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [username, setUsername] = useState();
+	useEffect(() => {
+		Auth.currentAuthenticatedUser().then(data => {
+			setUsername(data.username);
+		});
+	}, []);
+	return (
+		<>
+			{!username && <p>Loading.......</p>}
+			{username && <MainApp username={username} />}
+		</>
+	);
 }
 
-export default App;
+export default withAuthenticator(App);

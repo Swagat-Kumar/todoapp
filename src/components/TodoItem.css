@@ -1,0 +1,31 @@
+.list-item {
+	display: flex;
+	justify-content: space-between;
+}
+.list-item .todo-item {
+	display: flex;
+	align-items: center;
+}
+.list-item .todo-item .todo-tag {
+	margin: 10px;
+	white-space: normal !important;
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/* @media @tablet {
+    .todo-item {
+      .todo-tag {
+        max-width: 500px;
+      }
+    }
+  }
+
+  @media @desktop {
+    .todo-item {
+      .todo-tag {
+        max-width: 100%;
+      }
+    }
+  }
+} */
