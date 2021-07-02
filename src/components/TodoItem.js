@@ -9,7 +9,9 @@ const TodoItem = ({ todo, onTodoRemoval, onTodoToggle }) => {
 			actions={[
 				<Tooltip
 					title={
-						todo.done ? "Mark as uncompleted" : "Mark as completed"
+						todo.done
+							? "mark as uncompleted!"
+							: "mark as completed!"
 					}
 				>
 					<Switch
@@ -20,7 +22,7 @@ const TodoItem = ({ todo, onTodoRemoval, onTodoToggle }) => {
 					/>
 				</Tooltip>,
 				<Popconfirm
-					title='Are you sure you want to delete?'
+					title='are you sure you want to delete?'
 					onConfirm={() => {
 						onTodoRemoval(todo);
 					}}

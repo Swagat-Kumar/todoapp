@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import { createTodo, deleteTodo, updateTodo } from "../graphql/mutations";
+// import * as subscriptions from "../graphql/subscriptions";
 import { listTodos } from "../graphql/queries";
 import { Row, Col, Card, PageHeader } from "antd";
 import { message } from "antd";
@@ -14,19 +15,44 @@ const MainApp = ({ username }) => {
 		try {
 			const todoData = await API.graphql(graphqlOperation(listTodos));
 			const todos = todoData.data.listTodos.items;
+			todos.sort((a, b) => {
+				return a.done - b.done;
+			});
 			setTodos(todos);
 		} catch (err) {
 			console.log("error fetching todos");
 		}
 	};
+	// API.graphql(
+	// 	graphqlOperation(subscriptions.onCreateTodo, { owner: username })
+	// ).subscribe({
+	// 	next: () => {
+	// 		fetchTodos().then(message.success("todo added!"));
+	// 	},
+	// 	error: error => console.warn(error),
+	// });
+	// API.graphql(
+	// 	graphqlOperation(subscriptions.onDeleteTodo, { owner: username })
+	// ).subscribe({
+	// 	next: () => {
+	// 		fetchTodos().then(message.success("todo deleted!"));
+	// 	},
+	// 	error: error => console.warn(error),
+	// });
+
 	const handleFormSubmit = async todo => {
 		try {
 			const newTodo = { ...todo, done: false };
 			const newResponse = await API.graphql(
 				graphqlOperation(createTodo, { input: newTodo })
 			);
-			setTodos([...todos, newResponse.data.createTodo]);
-			message.success("Todo added!");
+			const newTodos = [...todos, newResponse.data.createTodo];
+			newTodos.sort((a, b) => {
+				return a.done - b.done;
+			});
+			setTodos(newTodos);
+
+			message.success("todo added!");
 		} catch (err) {
 			console.log("error making todos");
 		}
@@ -38,7 +64,7 @@ const MainApp = ({ username }) => {
 				graphqlOperation(deleteTodo, { input: { id: todo.id } })
 			);
 			setTodos(todos.filter(t => t.id !== todo.id));
-			message.warn("Todo removed!");
+			message.warn("todo removed!");
 		} catch (err) {
 			console.log("error removing todos");
 		}
@@ -51,16 +77,19 @@ const MainApp = ({ username }) => {
 					input: { id: todo.id, done: !todo.done },
 				})
 			);
-			setTodos(
-				todos.map(t => {
-					if (t.id !== todo.id) {
-						return t;
-					} else {
-						return { ...t, done: !t.done };
-					}
-				})
-			);
-			message.info("Todo state updated!");
+			const newTodos = todos.map(t => {
+				if (t.id !== todo.id) {
+					return t;
+				} else {
+					return { ...t, done: !t.done };
+				}
+			});
+
+			newTodos.sort((a, b) => {
+				return a.done - b.done;
+			});
+			setTodos(newTodos);
+			message.info("todo updated!");
 		} catch (err) {
 			console.log("error updating todo status!");
 		}
